@@ -5,7 +5,7 @@ import numpy as np
 import pickle
 
 # Load text file
-with open("sample.txt", "r") as f:
+with open("medical.txt", "r") as f:
     text = f.read()
 
 # Split into chunks
