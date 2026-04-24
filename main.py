@@ -48,7 +48,8 @@ answer_vector = embedder.encode([response.choices[0].message.content])
 context_vector = embedder.encode([context])
 similarity = cosine_similarity(answer_vector, context_vector)[0][0]
 
-print(f"\nValidation Score: {round(similarity * 100, 2)}%")
+score = round(float(similarity) * 100, 2)
+print(f"Validation Score: {score}%")
 
 if similarity > 0.5:
     print("Status: ✅ Answer is reliable")
@@ -67,4 +68,4 @@ else:
     confidence = "Low"
     emoji = "🔴"
 
-print(f"Confidence: {emoji} {confidence} ({round(similarity * 100, 2)}%)")
+print(f"Confidence: {emoji} {confidence} ({score}%)")
