@@ -54,3 +54,17 @@ if similarity > 0.5:
     print("Status: ✅ Answer is reliable")
 else:
     print("Status: ❌ Answer may not be reliable")
+
+
+# Confidence Score
+if similarity >= 0.75:
+    confidence = "High"
+    emoji = "🟢"
+elif similarity >= 0.50:
+    confidence = "Medium"
+    emoji = "🟡"
+else:
+    confidence = "Low"
+    emoji = "🔴"
+
+print(f"Confidence: {emoji} {confidence} ({round(similarity * 100, 2)}%)")
