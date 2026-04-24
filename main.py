@@ -9,6 +9,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
 from groq import Groq
+from sklearn.metrics.pairwise import cosine_similarity
 
 load_dotenv()
 
@@ -41,3 +42,15 @@ response = client.chat.completions.create(
 )
 
 print("\nAnswer:", response.choices[0].message.content)
+
+# Validation
+answer_vector = embedder.encode([response.choices[0].message.content])
+context_vector = embedder.encode([context])
+similarity = cosine_similarity(answer_vector, context_vector)[0][0]
+
+print(f"\nValidation Score: {round(similarity * 100, 2)}%")
+
+if similarity > 0.5:
+    print("Status: ✅ Answer is reliable")
+else:
+    print("Status: ❌ Answer may not be reliable")
