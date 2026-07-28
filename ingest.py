@@ -5,8 +5,12 @@ import numpy as np
 import pickle
 
 # Load text file
-with open("medical.txt", "r") as f:
-    text = f.read()
+from pypdf import PdfReader
+
+reader = PdfReader("Diabetes_file.pdf")
+text = ""
+for page in reader.pages:
+    text += page.extract_text()
 
 # Split into chunks
 splitter = RecursiveCharacterTextSplitter(chunk_size=100, chunk_overlap=20)
