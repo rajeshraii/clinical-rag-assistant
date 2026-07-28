@@ -13,7 +13,7 @@ for page in reader.pages:
     text += page.extract_text()
 
 # Split into chunks
-splitter = RecursiveCharacterTextSplitter(chunk_size=100, chunk_overlap=20)
+splitter = RecursiveCharacterTextSplitter(chunk_size=300, chunk_overlap=50)
 chunks = splitter.split_text(text)
 
 print(f"Total chunks: {len(chunks)}")
