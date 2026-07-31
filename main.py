@@ -52,9 +52,9 @@ score = round(float(similarity) * 100, 2)
 print(f"Validation Score: {score}%")
 
 if similarity > 0.5:
-    print("Status: ✅ Answer is reliable")
+    print("Status:  Answer is reliable")
 else:
-    print("Status: ❌ Answer may not be reliable")
+    print("Status:  Answer may not be reliable")
 
 
 # Confidence Score
@@ -69,3 +69,7 @@ else:
     emoji = "🔴"
 
 print(f"Confidence: {emoji} {confidence} ({score}%)")
+
+print("Retrieved chunks:")
+for i in I[0]:
+    print(f"- {chunks[i]}")

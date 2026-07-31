@@ -5,6 +5,15 @@ from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
 from groq import Groq
 from sklearn.metrics.pairwise import cosine_similarity
+import psycopg2
+
+conn = psycopg2.connect(
+    host="127.0.0.1",
+    database="clinical_rag",
+    user="postgres",
+    password=os.getenv("DATABASE_PASSWORD")
+)
+cursor = conn.cursor()
 
 load_dotenv()
 app = FastAPI()
@@ -37,5 +46,11 @@ def ask(query: Query):
     similarity = float(cosine_similarity(answer_vector, context_vector)[0][0])
 
     confidence = "High" if similarity >= 0.75 else "Medium" if similarity >= 0.50 else "Low"
+
+    cursor.execute(
+    "INSERT INTO chat_history (question, answer, confidence, score) VALUES (%s, %s, %s, %s)",
+    (query.question, answer, confidence, round(similarity * 100, 2))
+    )
+    conn.commit()
 
     return {"answer": answer, "confidence": confidence, "score": round(similarity * 100, 2)}
