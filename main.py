@@ -27,7 +27,7 @@ query = input("Ask a question: ")
 
 # Retrieve relevant chunks
 query_vector = embedder.encode([query])
-D, I = index.search(np.array(query_vector), k=3)
+D, I = index.search(np.array(query_vector), k=5)
 context = "\n".join([chunks[i] for i in I[0]])
 
 # Generate answer
