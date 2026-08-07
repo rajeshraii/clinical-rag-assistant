@@ -1,0 +1,72 @@
+[
+  {
+    "question": "What are the symptoms of diabetes?",
+    "confidence": "High",
+    "score": 81.92,
+    "response_time": 1.98,
+    "source_pdf": "Diabetes_file.pdf"
+  },
+  {
+    "question": "What is the difference between Type 1 and Type 2 diabetes?",
+    "confidence": "High",
+    "score": 82.65,
+    "response_time": 1.29,
+    "source_pdf": "Diabetes_file.pdf"
+  },
+  {
+    "question": "What are the risk factors for Type 2 diabetes?",
+    "confidence": "High",
+    "score": 82.77,
+    "response_time": 1.7,
+    "source_pdf": "Diabetes_file.pdf"
+  },
+  {
+    "question": "What happens to blood vessels in hypertension?",
+    "confidence": "Low",
+    "score": 20.39,
+    "response_time": 1.33,
+    "source_pdf": "Diabetes_file.pdf"
+  },
+  {
+    "question": "How is hypertension treated?",
+    "confidence": "Low",
+    "score": 43.38,
+    "response_time": 1.41,
+    "source_pdf": "Diabetes_file.pdf"
+  },
+  {
+    "question": "What is considered a high blood pressure reading?",
+    "confidence": "Low",
+    "score": 33.09,
+    "response_time": 1.46,
+    "source_pdf": "Diabetes_file.pdf"
+  },
+  {
+    "question": "What is Primary Health Care?",
+    "confidence": "High",
+    "score": 89.68,
+    "response_time": 0.98,
+    "source_pdf": "PHC.pdf"
+  },
+  {
+    "question": "What are the key principles of PHC?",
+    "confidence": "High",
+    "score": 86.38,
+    "response_time": 1.07,
+    "source_pdf": "PHC.pdf"
+  },
+  {
+    "question": "How does PHC improve health system performance?",
+    "confidence": "High",
+    "score": 88.0,
+    "response_time": 1.21,
+    "source_pdf": "PHC.pdf"
+  },
+  {
+    "question": "What is the capital of France?",
+    "confidence": "Low",
+    "score": 26.63,
+    "response_time": 0.81,
+    "source_pdf": "PHC.pdf"
+  }
+]
