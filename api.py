@@ -7,6 +7,7 @@ from groq import Groq
 from sklearn.metrics.pairwise import cosine_similarity
 import psycopg2
 from fastapi import UploadFile, File
+from sentence_transformers import CrossEncoder
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pypdf import PdfReader
 import shutil
@@ -29,6 +30,7 @@ with open("chunks.pkl", "rb") as f:
     chunks = pickle.load(f)
 
 embedder = SentenceTransformer("all-MiniLM-L6-v2")
+reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 class Query(BaseModel):
@@ -37,11 +39,19 @@ class Query(BaseModel):
 @app.post("/ask")
 def ask(query: Query):
     query_vector = embedder.encode([query.question])
-    D, I = index.search(np.array(query_vector), k=7)
-    retrieved = [chunks[i] for i in I[0]]  # these are now dicts with metadata
-    print("Retrieved chunks:", [r["text"] for r in retrieved])
-    context = "\n".join([r["text"] for r in retrieved])
+    D, I = index.search(np.array(query_vector), k=20)  # retrieve more candidates first
+    candidates = [chunks[i] for i in I[0]]
 
+    # Rerank using cross-encoder
+    pairs = [[query.question, c["text"]] for c in candidates]
+    rerank_scores = reranker.predict(pairs)
+
+    # Sort candidates by rerank score, keep top 5
+    ranked = [c for _, c in sorted(zip(rerank_scores, candidates), key=lambda x: x[0], reverse=True)]
+    retrieved = ranked[:5]
+
+    print("Reranked chunks:", [r["text"] for r in retrieved])
+    context = "\n".join([r["text"] for r in retrieved])
     prompt = prompt = prompt = f"Answer the question using the same key terms and phrasing as the context wherever possible. Follow any length or format instructions in the question exactly.\nContext: {context}\nQuestion: {query.question}\nAnswer:"
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
@@ -53,8 +63,8 @@ def ask(query: Query):
 
     # Break ALL retrieved chunks into individual sentences
     all_sentences = []
-    for i in I[0]:
-        sentences = re.split(r'(?<=[.!?]) +', chunks[i]["text"])
+    for r in retrieved:
+        sentences = re.split(r'(?<=[.!?]) +', r["text"])
         all_sentences.extend(sentences)
 
     # Remove very short/empty fragments
@@ -127,10 +137,8 @@ def ask(query: Query):
 
     if unsupported_count > 0:
         confidence = "Low"
-    elif final_confidence_score >= 0.75:
+    elif final_confidence_score >= 0.80:
         confidence = "High"
-    elif final_confidence_score >= 0.50:
-        confidence = "Medium"
     else:
         confidence = "Low"
 
