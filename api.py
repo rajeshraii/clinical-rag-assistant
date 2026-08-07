@@ -38,8 +38,9 @@ class Query(BaseModel):
 def ask(query: Query):
     query_vector = embedder.encode([query.question])
     D, I = index.search(np.array(query_vector), k=7)
-    print("Retrieved chunks:", [chunks[i] for i in I[0]])
-    context = "\n".join([chunks[i] for i in I[0]])
+    retrieved = [chunks[i] for i in I[0]]  # these are now dicts with metadata
+    print("Retrieved chunks:", [r["text"] for r in retrieved])
+    context = "\n".join([r["text"] for r in retrieved])
 
     prompt = prompt = prompt = f"Answer the question using the same key terms and phrasing as the context wherever possible. Follow any length or format instructions in the question exactly.\nContext: {context}\nQuestion: {query.question}\nAnswer:"
     response = client.chat.completions.create(
@@ -53,7 +54,7 @@ def ask(query: Query):
     # Break ALL retrieved chunks into individual sentences
     all_sentences = []
     for i in I[0]:
-        sentences = re.split(r'(?<=[.!?]) +', chunks[i])
+        sentences = re.split(r'(?<=[.!?]) +', chunks[i]["text"])
         all_sentences.extend(sentences)
 
     # Remove very short/empty fragments
@@ -72,7 +73,74 @@ def ask(query: Query):
     )
     conn.commit()
 
-    return {"answer": answer, "confidence": confidence, "score": round(similarity * 100, 2)}
+    # Find which chunk had the best match (for evidence)
+    best_match_index = int(np.argmax(sentence_similarities))
+    best_sentence = all_sentences[best_match_index]
+
+    # Find which retrieved chunk this sentence came from
+    source_chunk = None
+    for r in retrieved:
+        if best_sentence in r["text"]:
+            source_chunk = r
+            break
+
+    evidence = {
+        "source_pdf": source_chunk["pdf_name"] if source_chunk else "Unknown",
+        "page_number": source_chunk["page_number"] if source_chunk else "Unknown",
+        "supporting_text": best_sentence
+    }
+
+
+    # Break the ANSWER into sentences
+    answer_sentences = re.split(r'(?<=[.!?]) +', answer)
+    answer_sentences = [s.strip() for s in answer_sentences if len(s.strip()) > 10]
+
+    sentence_verification = []
+    for a_sent in answer_sentences:
+        a_vector = embedder.encode([a_sent])
+        sims = cosine_similarity(a_vector, sentence_vectors)[0]
+        best_score = float(max(sims))
+        best_idx = int(np.argmax(sims))
+
+        status = "Supported" if best_score >= 0.55 else "Partially Supported" if best_score >= 0.35 else "Unsupported"
+
+        sentence_verification.append({
+            "sentence": a_sent,
+            "support_score": round(best_score * 100, 2),
+            "status": status,
+            "matched_evidence": all_sentences[best_idx]
+        })
+
+
+        # Confidence Engine — combines retrieval quality + per-sentence verification
+    retrieval_quality = float(np.mean([s for s in sentence_similarities]))  # how relevant were retrieved chunks overall
+
+    supported_count = sum(1 for s in sentence_verification if s["status"] == "Supported")
+    partial_count = sum(1 for s in sentence_verification if s["status"] == "Partially Supported")
+    unsupported_count = sum(1 for s in sentence_verification if s["status"] == "Unsupported")
+    total_sentences = len(sentence_verification)
+
+    verification_score = (supported_count + 0.5 * partial_count) / total_sentences if total_sentences > 0 else 0
+
+    # Weighted combination: verification matters most, retrieval quality is a secondary signal
+    final_confidence_score = (0.7 * verification_score) + (0.3 * retrieval_quality)
+
+    if unsupported_count > 0:
+        confidence = "Low"
+    elif final_confidence_score >= 0.75:
+        confidence = "High"
+    elif final_confidence_score >= 0.50:
+        confidence = "Medium"
+    else:
+        confidence = "Low"
+
+    return {
+    "answer": answer,
+    "confidence": confidence,
+    "score": round(final_confidence_score * 100, 2),
+    "evidence": evidence,
+    "sentence_verification": sentence_verification
+}
 
 @app.post("/upload")
 async def upload_pdf(file: UploadFile = File(...)):
@@ -88,22 +156,29 @@ async def upload_pdf(file: UploadFile = File(...)):
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    # Extract text from PDF
     reader = PdfReader(file_path)
-    text = ""
-    for page in reader.pages:
-        text += page.extract_text()
-
-    # Chunk it
     splitter = RecursiveCharacterTextSplitter(chunk_size=300, chunk_overlap=50)
-    new_chunks = splitter.split_text(text)
 
-    # Embed and add to FAISS
-    new_embeddings = embedder.encode(new_chunks)
+    global chunks
+    next_id = len(chunks)  # continue numbering from existing chunks
+    new_chunks = []
+
+    for page_num, page in enumerate(reader.pages, start=1):
+        page_text = page.extract_text()
+        page_chunks = splitter.split_text(page_text)
+        for c in page_chunks:
+            new_chunks.append({
+                "chunk_id": next_id,
+                "pdf_name": file.filename,
+                "page_number": page_num,
+                "text": c
+            })
+            next_id += 1
+
+    texts_only = [c["text"] for c in new_chunks]
+    new_embeddings = embedder.encode(texts_only)
     index.add(np.array(new_embeddings))
 
-    # Update chunks list and save
-    global chunks
     chunks.extend(new_chunks)
     faiss.write_index(index, "vector_store.index")
     with open("chunks.pkl", "wb") as f:
