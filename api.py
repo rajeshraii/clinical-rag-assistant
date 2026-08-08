@@ -75,14 +75,6 @@ def ask(query: Query):
     sentence_similarities = cosine_similarity(answer_vector, sentence_vectors)[0]
     similarity = float(max(sentence_similarities))
 
-    confidence = "High" if similarity >= 0.75 else "Medium" if similarity >= 0.50 else "Low"
-
-    cursor.execute(
-    "INSERT INTO chat_history (question, answer, confidence, score) VALUES (%s, %s, %s, %s)",
-    (query.question, answer, confidence, round(similarity * 100, 2))
-    )
-    conn.commit()
-
     # Find which chunk had the best match (for evidence)
     best_match_index = int(np.argmax(sentence_similarities))
     best_sentence = all_sentences[best_match_index]
@@ -122,7 +114,7 @@ def ask(query: Query):
         })
 
 
-        # Confidence Engine — combines retrieval quality + per-sentence verification
+    # Confidence Engine — combines retrieval quality + per-sentence verification
     retrieval_quality = float(np.mean([s for s in sentence_similarities]))  # how relevant were retrieved chunks overall
 
     supported_count = sum(1 for s in sentence_verification if s["status"] == "Supported")
@@ -141,6 +133,12 @@ def ask(query: Query):
         confidence = "High"
     else:
         confidence = "Low"
+
+    cursor.execute(
+        "INSERT INTO chat_history (question, answer, confidence, score) VALUES (%s, %s, %s, %s)",
+        (query.question, answer, confidence, round(final_confidence_score * 100, 2))
+    )
+    conn.commit()
 
     return {
     "answer": answer,
