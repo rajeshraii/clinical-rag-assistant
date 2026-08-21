@@ -14,7 +14,7 @@ conn = psycopg2.connect(
 )
 cursor = conn.cursor()
 
-cursor.execute("SELECT question, confidence, score FROM chat_history ORDER BY created_at DESC")
+cursor.execute("SELECT question, confidence, score, response_time FROM chat_history ORDER BY created_at DESC")
 rows = cursor.fetchall()
 
 total = len(rows)
@@ -29,9 +29,9 @@ else:
 
     # Save raw results as JSON
     history_data = [
-        {"question": r[0], "confidence": r[1], "score": r[2]}
-        for r in rows
-        ]
+    {"question": r[0], "confidence": r[1], "score": r[2], "response_time": r[3]}
+    for r in rows
+    ]
     with open("real_usage_results.json", "w") as f:
         json.dump(history_data, f, indent=2)
 
