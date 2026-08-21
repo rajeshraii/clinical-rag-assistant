@@ -20,6 +20,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from fastapi import Request
+from rank_bm25 import BM25Okapi
 
 
 load_dotenv()
@@ -59,6 +60,10 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 index = faiss.read_index("vector_store.index")
 with open("chunks.pkl", "rb") as f:
     chunks = pickle.load(f)
+    
+from rank_bm25 import BM25Okapi
+tokenized_corpus = [c["text"].lower().split() for c in chunks]
+bm25 = BM25Okapi(tokenized_corpus)
 
 embedder = SentenceTransformer("all-MiniLM-L6-v2")
 reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
@@ -71,8 +76,20 @@ class Query(BaseModel):
 @limiter.limit("10/minute")
 def ask(request: Request, query: Query):
     query_vector = embedder.encode([query.question])
-    D, I = index.search(np.array(query_vector), k=20)  # retrieve more candidates first
-    candidates = [chunks[i] for i in I[0]]
+    
+    # Semantic search (FAISS)
+    D, I = index.search(np.array(query_vector), k=20)
+    semantic_candidates = [chunks[i] for i in I[0]]
+
+    # Keyword search (BM25)
+    tokenized_query = query.question.lower().split()
+    bm25_scores = bm25.get_scores(tokenized_query)
+    bm25_top_indices = np.argsort(bm25_scores)[::-1][:20]
+    keyword_candidates = [chunks[i] for i in bm25_top_indices]
+
+    # Merge and deduplicate (by chunk_id)
+    combined = {c["chunk_id"]: c for c in semantic_candidates + keyword_candidates}
+    candidates = list(combined.values())
 
     # Rerank using cross-encoder
     pairs = [[query.question, c["text"]] for c in candidates]
