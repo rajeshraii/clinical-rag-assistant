@@ -21,6 +21,7 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from fastapi import Request
 from rank_bm25 import BM25Okapi
+import time
 
 
 load_dotenv()
@@ -60,7 +61,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 index = faiss.read_index("vector_store.index")
 with open("chunks.pkl", "rb") as f:
     chunks = pickle.load(f)
-    
+
 from rank_bm25 import BM25Okapi
 tokenized_corpus = [c["text"].lower().split() for c in chunks]
 bm25 = BM25Okapi(tokenized_corpus)
@@ -75,6 +76,7 @@ class Query(BaseModel):
 @app.post("/ask", dependencies=[Depends(verify_api_key)])
 @limiter.limit("10/minute")
 def ask(request: Request, query: Query):
+    start_time = time.time()
     query_vector = embedder.encode([query.question])
     
     # Semantic search (FAISS)
@@ -183,10 +185,12 @@ def ask(request: Request, query: Query):
     else:
         confidence = "Low"
 
+    elapsed_time = round(time.time() - start_time, 2)
+
     cursor.execute(
-        "INSERT INTO chat_history (question, answer, confidence, score) VALUES (%s, %s, %s, %s)",
-        (query.question, answer, confidence, round(final_confidence_score * 100, 2))
-    )
+        "INSERT INTO chat_history (question, answer, confidence, score, response_time) VALUES (%s, %s, %s, %s, %s)",
+        (query.question, answer, confidence, round(final_confidence_score * 100, 2), elapsed_time)
+        )
     conn.commit()
 
     return {
