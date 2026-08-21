@@ -12,6 +12,18 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pypdf import PdfReader
 import shutil
 import re
+from fastapi import Security, HTTPException
+from fastapi.security import APIKeyHeader
+from fastapi import Depends
+load_dotenv()
+
+API_KEY = os.getenv("APP_API_KEY")
+api_key_header = APIKeyHeader(name="X-API-Key")
+
+def verify_api_key(key: str = Security(api_key_header)):
+    if key != API_KEY:
+        raise HTTPException(status_code=403, detail="Invalid API Key")
+    
 load_dotenv()
 
 conn = psycopg2.connect(
@@ -36,7 +48,7 @@ client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 class Query(BaseModel):
     question: str
 
-@app.post("/ask")
+@app.post("/ask", dependencies=[Depends(verify_api_key)])
 def ask(query: Query):
     query_vector = embedder.encode([query.question])
     D, I = index.search(np.array(query_vector), k=20)  # retrieve more candidates first
@@ -54,7 +66,7 @@ def ask(query: Query):
     context = "\n".join([r["text"] for r in retrieved])
     prompt = prompt = prompt = f"Answer the question using the same key terms and phrasing as the context wherever possible. Follow any length or format instructions in the question exactly.\nContext: {context}\nQuestion: {query.question}\nAnswer:"
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-120b",
         messages=[{"role": "user", "content": prompt}]
     )
     answer = response.choices[0].message.content
@@ -148,7 +160,7 @@ def ask(query: Query):
     "sentence_verification": sentence_verification
 }
 
-@app.post("/upload")
+@app.post("/upload", dependencies=[Depends(verify_api_key)])
 async def upload_pdf(file: UploadFile = File(...)):
     processed_files = "processed.txt"
     if os.path.exists(processed_files):
