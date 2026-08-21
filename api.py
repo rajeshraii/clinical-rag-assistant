@@ -15,6 +15,13 @@ import re
 from fastapi import Security, HTTPException
 from fastapi.security import APIKeyHeader
 from fastapi import Depends
+from fastapi.middleware.cors import CORSMiddleware
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+from fastapi import Request
+
+
 load_dotenv()
 
 API_KEY = os.getenv("APP_API_KEY")
@@ -37,6 +44,18 @@ cursor = conn.cursor()
 load_dotenv()
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # future React frontend's URL
+    allow_credentials=True,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
+
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
 index = faiss.read_index("vector_store.index")
 with open("chunks.pkl", "rb") as f:
     chunks = pickle.load(f)
@@ -49,7 +68,8 @@ class Query(BaseModel):
     question: str
 
 @app.post("/ask", dependencies=[Depends(verify_api_key)])
-def ask(query: Query):
+@limiter.limit("10/minute")
+def ask(request: Request, query: Query):
     query_vector = embedder.encode([query.question])
     D, I = index.search(np.array(query_vector), k=20)  # retrieve more candidates first
     candidates = [chunks[i] for i in I[0]]
@@ -174,7 +194,7 @@ async def upload_pdf(file: UploadFile = File(...)):
 
     processed_files = "processed.txt"
     # ... rest of your existing code continues here
-    
+
     processed_files = "processed.txt"
     if os.path.exists(processed_files):
         with open(processed_files) as f:
