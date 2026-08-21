@@ -1,0 +1,702 @@
+[
+  {
+    "question": "What role does regular foot care play in diabetes management, and what recommendations are given for preventing foot complications?",
+    "confidence": "High",
+    "score": 88.35
+  },
+  {
+    "question": "What are some complications of diabetes, and which healthcare professionals are involved in preventing or managing these complications?",
+    "confidence": "High",
+    "score": 89.77
+  },
+  {
+    "question": "What are the major goals of diabetes management mentioned in the document?",
+    "confidence": "High",
+    "score": 86.03
+  },
+  {
+    "question": "What is PHC?",
+    "confidence": "High",
+    "score": 86.62
+  },
+  {
+    "question": "what is PHC and list its 10 features??",
+    "confidence": "High",
+    "score": 80.23
+  },
+  {
+    "question": "what is PHC and list its features??",
+    "confidence": "High",
+    "score": 85.54
+  },
+  {
+    "question": "what is PHC??",
+    "confidence": "High",
+    "score": 85.79
+  },
+  {
+    "question": "What is PHc and list it 4 features???",
+    "confidence": "High",
+    "score": 86.48
+  },
+  {
+    "question": "What is PHc and list it10 features???",
+    "confidence": "High",
+    "score": 83.1
+  },
+  {
+    "question": "What is PHc and list its 9 features???",
+    "confidence": "Low",
+    "score": 74.61
+  },
+  {
+    "question": "What is PHc and list its 8 features???",
+    "confidence": "Low",
+    "score": 78.7
+  },
+  {
+    "question": "What is PHc and list its 7 features???",
+    "confidence": "Low",
+    "score": 70.07
+  },
+  {
+    "question": "What is PHc and list its 6 features???",
+    "confidence": "High",
+    "score": 86.29
+  },
+  {
+    "question": "What is PHc and list its features???",
+    "confidence": "Low",
+    "score": 76.91
+  },
+  {
+    "question": "What is PHC???",
+    "confidence": "High",
+    "score": 85.31
+  },
+  {
+    "question": "What is PHC??",
+    "confidence": "High",
+    "score": 86.57
+  },
+  {
+    "question": "what is PHC??",
+    "confidence": "High",
+    "score": 86.87
+  },
+  {
+    "question": "what is PHC??",
+    "confidence": "Low",
+    "score": 40.06
+  },
+  {
+    "question": "What is Ashtma?",
+    "confidence": "High",
+    "score": 81.73
+  },
+  {
+    "question": "What is Ashtma?",
+    "confidence": "High",
+    "score": 81.16
+  },
+  {
+    "question": "WHAT IS ASHTMA?",
+    "confidence": "Low",
+    "score": 46.2
+  },
+  {
+    "question": "WHHAT IS ASHTMA?",
+    "confidence": "Low",
+    "score": 17.17
+  },
+  {
+    "question": "What is Ashtma?",
+    "confidence": "Low",
+    "score": 40.47
+  },
+  {
+    "question": "What is PHC?",
+    "confidence": "High",
+    "score": 86.7
+  },
+  {
+    "question": "What is Ashtma?",
+    "confidence": "Low",
+    "score": 44.56
+  },
+  {
+    "question": "What is Ashtma?",
+    "confidence": "High",
+    "score": 82.21
+  },
+  {
+    "question": "What is Ashtama? and tell me about it.",
+    "confidence": "Low",
+    "score": 73.26
+  },
+  {
+    "question": "What is Ashtma? and tell me about it.",
+    "confidence": "Low",
+    "score": 43.75
+  },
+  {
+    "question": "What is Ashtma",
+    "confidence": "Low",
+    "score": 78.97
+  },
+  {
+    "question": "What is Ashtma",
+    "confidence": "Low",
+    "score": 58.55
+  },
+  {
+    "question": "What is Diabetes??",
+    "confidence": "High",
+    "score": 83.71
+  },
+  {
+    "question": "What is Diabetes? and tell me about it in 400 words",
+    "confidence": "High",
+    "score": 84.53
+  },
+  {
+    "question": "What is Ashtma? explain it in 500 words?",
+    "confidence": "Low",
+    "score": 76.14
+  },
+  {
+    "question": "explain in detail about asthama?",
+    "confidence": "High",
+    "score": 80.23
+  },
+  {
+    "question": "explain in detail about asthma?",
+    "confidence": "High",
+    "score": 86.55
+  },
+  {
+    "question": "explain in detail about asthama?",
+    "confidence": "High",
+    "score": 80.56
+  },
+  {
+    "question": "What is the capital of France?",
+    "confidence": "Medium",
+    "score": 54.46
+  },
+  {
+    "question": "How does PHC improve health system performance?",
+    "confidence": "High",
+    "score": 82.81
+  },
+  {
+    "question": "What are the key principles of PHC?",
+    "confidence": "High",
+    "score": 87.96
+  },
+  {
+    "question": "What is Primary Health Care?",
+    "confidence": "High",
+    "score": 88.01
+  },
+  {
+    "question": "What is considered a high blood pressure reading?",
+    "confidence": "Low",
+    "score": 39.51
+  },
+  {
+    "question": "How is hypertension treated?",
+    "confidence": "Medium",
+    "score": 61.07
+  },
+  {
+    "question": "What happens to blood vessels in hypertension?",
+    "confidence": "Low",
+    "score": 13.83
+  },
+  {
+    "question": "What are the risk factors for Type 2 diabetes?",
+    "confidence": "High",
+    "score": 86.69
+  },
+  {
+    "question": "What is the difference between Type 1 and Type 2 diabetes?",
+    "confidence": "Medium",
+    "score": 72.97
+  },
+  {
+    "question": "What are the symptoms of diabetes?",
+    "confidence": "Medium",
+    "score": 73.41
+  },
+  {
+    "question": "What is PHC? explain it in 1000 words",
+    "confidence": "High",
+    "score": 75.49
+  },
+  {
+    "question": "What is PHC? explain it in 500 words",
+    "confidence": "Medium",
+    "score": 68.77
+  },
+  {
+    "question": "What is PHC? ",
+    "confidence": "High",
+    "score": 92.37
+  },
+  {
+    "question": "What is Asthma?",
+    "confidence": "High",
+    "score": 77.58
+  },
+  {
+    "question": "What is Ashtma? ",
+    "confidence": "Low",
+    "score": 42.0
+  },
+  {
+    "question": "What is Diabetes? and what and all the causes of it explain in 400 words",
+    "confidence": "High",
+    "score": 81.79
+  },
+  {
+    "question": "What is Diabetes? and what and all the causes of it",
+    "confidence": "Medium",
+    "score": 74.83
+  },
+  {
+    "question": "What is the capital of France?",
+    "confidence": "Low",
+    "score": 45.35
+  },
+  {
+    "question": "How does PHC improve health system performance?",
+    "confidence": "High",
+    "score": 82.53
+  },
+  {
+    "question": "What are the key principles of PHC?",
+    "confidence": "High",
+    "score": 87.13
+  },
+  {
+    "question": "What is Primary Health Care?",
+    "confidence": "High",
+    "score": 90.28
+  },
+  {
+    "question": "What is considered a high blood pressure reading?",
+    "confidence": "Medium",
+    "score": 52.53
+  },
+  {
+    "question": "How is hypertension treated?",
+    "confidence": "Medium",
+    "score": 53.1
+  },
+  {
+    "question": "What happens to blood vessels in hypertension?",
+    "confidence": "Low",
+    "score": 32.62
+  },
+  {
+    "question": "What are the risk factors for Type 2 diabetes?",
+    "confidence": "High",
+    "score": 89.92
+  },
+  {
+    "question": "What is the difference between Type 1 and Type 2 diabetes?",
+    "confidence": "High",
+    "score": 77.01
+  },
+  {
+    "question": "What are the symptoms of diabetes?",
+    "confidence": "Medium",
+    "score": 73.41
+  },
+  {
+    "question": "What is PHC ? and tell about its implementation in 100 words",
+    "confidence": "High",
+    "score": 85.11
+  },
+  {
+    "question": "What is PHC ? and tell about its implementation in 100 words",
+    "confidence": "High",
+    "score": 87.32
+  },
+  {
+    "question": "What is PHC ? and mention its all approach:implementation in 100 words",
+    "confidence": "Medium",
+    "score": 71.42
+  },
+  {
+    "question": "What is PHC ? and mention its all implementation approach in 100 words",
+    "confidence": "Medium",
+    "score": 72.63
+  },
+  {
+    "question": "What is PHC ? and mention its all implementation approach in 400 words",
+    "confidence": "Medium",
+    "score": 62.33
+  },
+  {
+    "question": "What is PHC ? and mention its all implementation approach in 300 words",
+    "confidence": "Medium",
+    "score": 60.4
+  },
+  {
+    "question": "What is PHC ? and mention its all implementation approach in 100 words",
+    "confidence": "Medium",
+    "score": 72.76
+  },
+  {
+    "question": "What is PHC ? and mention its all implementation approach in 200 words",
+    "confidence": "Medium",
+    "score": 66.02
+  },
+  {
+    "question": "What is PHC? and give its definition,terminology and framework.",
+    "confidence": "High",
+    "score": 86.29
+  },
+  {
+    "question": "What is PHC? also give its definition,terminology and framework in 200 words",
+    "confidence": "High",
+    "score": 85.3
+  },
+  {
+    "question": "What is Asthma?",
+    "confidence": "Low",
+    "score": 45.34
+  },
+  {
+    "question": "What is PHC and also give me definition,terminology and framework also with 2000 words and also give strctured output",
+    "confidence": "High",
+    "score": 75.68
+  },
+  {
+    "question": "What is PHC and also give me definition,terminology and framework also with 1000 words",
+    "confidence": "High",
+    "score": 79.41
+  },
+  {
+    "question": "What is PHC and also give me definition,terminology and framework also with 100 words",
+    "confidence": "High",
+    "score": 82.11
+  },
+  {
+    "question": "What is Ashtma and explain in 100 words?",
+    "confidence": "High",
+    "score": 84.44
+  },
+  {
+    "question": "What is Ashtma and explain in 100 words?",
+    "confidence": "High",
+    "score": 79.65
+  },
+  {
+    "question": "What is Ashtma?",
+    "confidence": "High",
+    "score": 81.46
+  },
+  {
+    "question": "What is Asthma and what and all the causes of it??",
+    "confidence": "High",
+    "score": 77.6
+  },
+  {
+    "question": "What is Asthma and what and all the causes of it??",
+    "confidence": "Medium",
+    "score": 74.78
+  },
+  {
+    "question": "What is Asthma?",
+    "confidence": "High",
+    "score": 81.09
+  },
+  {
+    "question": "What is Astama?",
+    "confidence": "Low",
+    "score": 46.0
+  },
+  {
+    "question": "What are the causes of HyperTension??",
+    "confidence": "Medium",
+    "score": 71.54
+  },
+  {
+    "question": "Why HyperTension happens and tell me in 1000 words",
+    "confidence": "Medium",
+    "score": 69.41
+  },
+  {
+    "question": "Why HyperTension happens and tell me in 500 words",
+    "confidence": "Medium",
+    "score": 72.41
+  },
+  {
+    "question": "Why HyperTension happens and tell me in 200 words",
+    "confidence": "Medium",
+    "score": 66.39
+  },
+  {
+    "question": "Why HyperTension happens and tell me in 100 words",
+    "confidence": "Medium",
+    "score": 65.87
+  },
+  {
+    "question": "Why HyperTension happens and tell me in 50 words",
+    "confidence": "Medium",
+    "score": 73.83
+  },
+  {
+    "question": "Why HyperTension happens and tell me in 1000 words",
+    "confidence": "High",
+    "score": 76.87
+  },
+  {
+    "question": "Why HyperTension happens and tell me in 100 words",
+    "confidence": "High",
+    "score": 75.67
+  },
+  {
+    "question": "Why HyperTension happens and tell me in 100 words",
+    "confidence": "Medium",
+    "score": 74.67
+  },
+  {
+    "question": "Why HyperTension happens and tell me in 50 words",
+    "confidence": "High",
+    "score": 75.53
+  },
+  {
+    "question": "Why HyperTension happens and tell me in 30 words",
+    "confidence": "Medium",
+    "score": 73.38
+  },
+  {
+    "question": "Why HyperTension happens and tell me in 20 words",
+    "confidence": "Medium",
+    "score": 74.54
+  },
+  {
+    "question": "Why HyperTension happens?",
+    "confidence": "High",
+    "score": 76.87
+  },
+  {
+    "question": "What is HyperTension and mention its indications?",
+    "confidence": "High",
+    "score": 78.96
+  },
+  {
+    "question": "What is HyperTension?and Explain within 200 words.",
+    "confidence": "High",
+    "score": 79.53
+  },
+  {
+    "question": "What is HyperTension?and Explain within 200 words.",
+    "confidence": "High",
+    "score": 79.18
+  },
+  {
+    "question": "What is HyperTension?and Explain within 200 words.",
+    "confidence": "High",
+    "score": 79.53
+  },
+  {
+    "question": "What is HyperTension?and Explain within 200 words.",
+    "confidence": "High",
+    "score": 79.53
+  },
+  {
+    "question": "What is HyperTension?and Explain within 200 words.",
+    "confidence": "High",
+    "score": 79.18
+  },
+  {
+    "question": "What is HyperTension?and Explain within 200 words.",
+    "confidence": "High",
+    "score": 79.18
+  },
+  {
+    "question": "What is HyperTension?",
+    "confidence": "High",
+    "score": 79.18
+  },
+  {
+    "question": "What is the cause of HyperTension??",
+    "confidence": "Medium",
+    "score": 53.8
+  },
+  {
+    "question": "What happens to blood vessels in Hypertension",
+    "confidence": "Medium",
+    "score": 58.84
+  },
+  {
+    "question": "What happens to blood vessels in HyperTension?",
+    "confidence": "Medium",
+    "score": 60.32
+  },
+  {
+    "question": "What happens to blood vessels in HyperTension?",
+    "confidence": "Low",
+    "score": 0.47
+  },
+  {
+    "question": "What happens to blood vessels in HyperTension?",
+    "confidence": "Medium",
+    "score": 60.32
+  },
+  {
+    "question": "What happens to blood vessels in HyperTension?",
+    "confidence": "Medium",
+    "score": 60.32
+  },
+  {
+    "question": "What happens to blood vessels in HyperTension?",
+    "confidence": "Medium",
+    "score": 60.32
+  },
+  {
+    "question": "What happens to blood vessels in HyperTension?",
+    "confidence": "Medium",
+    "score": 60.32
+  },
+  {
+    "question": "What happens to blood vessels in HyperTension?",
+    "confidence": "Medium",
+    "score": 63.29
+  },
+  {
+    "question": "What happens to blood vessels in HyperTension?",
+    "confidence": "Medium",
+    "score": 64.77
+  },
+  {
+    "question": "What happens to blood vessels in HyperTension?",
+    "confidence": "Medium",
+    "score": 60.32
+  },
+  {
+    "question": "What happens to blood vessels in HyperTension?",
+    "confidence": "Medium",
+    "score": 61.27
+  },
+  {
+    "question": "What happens to blood vessels in HyperTension?",
+    "confidence": "Low",
+    "score": 7.39
+  },
+  {
+    "question": "What happens to blood vessels in HyperTension?",
+    "confidence": "Low",
+    "score": 10.87
+  },
+  {
+    "question": "What happens to blood vessels in HyperTension?",
+    "confidence": "Low",
+    "score": 4.33
+  },
+  {
+    "question": "What happens to blood vessels in HyperTension?",
+    "confidence": "Low",
+    "score": 10.87
+  },
+  {
+    "question": "What happens to blood vessels in HyperTension?",
+    "confidence": "Low",
+    "score": 22.47
+  },
+  {
+    "question": "What happens to blood vessels in HyperTension?",
+    "confidence": "Medium",
+    "score": 57.66
+  },
+  {
+    "question": "What happens to blood vessels in HyperTension?",
+    "confidence": "Low",
+    "score": 2.45
+  },
+  {
+    "question": "What happens to blood vessels in hypertension",
+    "confidence": "Low",
+    "score": 11.34
+  },
+  {
+    "question": "What happens to blood vessels in hypertension",
+    "confidence": "Low",
+    "score": 11.34
+  },
+  {
+    "question": "What happens to blood vessels in hypertension",
+    "confidence": "Low",
+    "score": 41.41
+  },
+  {
+    "question": "What happens to arteries in hypertension?",
+    "confidence": "Medium",
+    "score": 57.68
+  },
+  {
+    "question": "What happens to arteries in hypertension?",
+    "confidence": "Low",
+    "score": 42.24
+  },
+  {
+    "question": "What happens to arteries in hypertension?",
+    "confidence": "Low",
+    "score": 31.61
+  },
+  {
+    "question": "Why HyperTension happens?",
+    "confidence": "High",
+    "score": 78.96
+  },
+  {
+    "question": "What is the symptoms of diabetes? and how we can control it? and what is the extreme diabetes level?",
+    "confidence": "High",
+    "score": 76.17
+  },
+  {
+    "question": "What is the symptoms of diabetes? and how we can control it? and what is the extreme diabetes level?",
+    "confidence": "High",
+    "score": 79.8
+  },
+  {
+    "question": "What is the symptoms of diabetes? and how we can control it?",
+    "confidence": "High",
+    "score": 77.32
+  },
+  {
+    "question": "What is the symptoms of diabetes?",
+    "confidence": "High",
+    "score": 86.63
+  },
+  {
+    "question": "What is diabetes?",
+    "confidence": "High",
+    "score": 77.28
+  },
+  {
+    "question": "What is diabetes?",
+    "confidence": "Medium",
+    "score": 69.05
+  },
+  {
+    "question": "What is diabetes?",
+    "confidence": "High",
+    "score": 78.7
+  },
+  {
+    "question": "What are the symptoms of diabetes?",
+    "confidence": "High",
+    "score": 86.92
+  },
+  {
+    "question": "What are the symptoms of diabetes?",
+    "confidence": "High",
+    "score": 86.63
+  }
+]
