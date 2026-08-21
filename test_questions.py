@@ -17,4 +17,9 @@ test_questions = [
 
     # Cross-document / edge case (optional, tests honesty)
     "What is the capital of France?",  # Should ideally say "not in context" or low confidence
-]
+
+
+    #Ashtma file
+    "What are the common triggers for asthma attacks?"
+
+]   
