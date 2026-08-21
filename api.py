@@ -162,6 +162,19 @@ def ask(query: Query):
 
 @app.post("/upload", dependencies=[Depends(verify_api_key)])
 async def upload_pdf(file: UploadFile = File(...)):
+    # Validate file type
+    if file.content_type != "application/pdf":
+        raise HTTPException(status_code=400, detail="Only PDF files are allowed")
+
+    # Validate file size (limit to 10MB)
+    contents = await file.read()
+    if len(contents) > 10 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File too large (max 10MB)")
+    await file.seek(0)  # reset file pointer after reading
+
+    processed_files = "processed.txt"
+    # ... rest of your existing code continues here
+    
     processed_files = "processed.txt"
     if os.path.exists(processed_files):
         with open(processed_files) as f:
