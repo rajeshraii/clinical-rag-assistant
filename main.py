@@ -1,3 +1,17 @@
+"""
+NOTE: This file is no longer used in the running application.
+
+Why it was created: Early combined pipeline (retrieval + generation + validation)
+built to test the full RAG flow end-to-end from the terminal, before the project
+had a web API.
+
+Why it's no longer used: All of this logic was later moved into api.py, which
+wraps the same pipeline in a FastAPI backend — adding hybrid search, reranking,
+sentence verification, confidence scoring, evidence extraction, and PostgreSQL
+storage on top of it. api.py is the actual application now; this file is kept
+only as a reference of how the pipeline looked at that stage.
+"""
+
 import os
 import numpy as np
 import faiss
