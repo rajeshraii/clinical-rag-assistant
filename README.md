@@ -11,7 +11,7 @@ Doctors and students deal with huge amounts of medical documents (research paper
 1. **Normal search is dumb** — keyword search doesn't understand meaning, so it often misses relevant info.
 2. **Normal AI chatbots hallucinate** — they can confidently give wrong medical information, which is dangerous in healthcare.
 
-**Our solution:** A system that only answers using the documents you give it, tells you *how confident* it is in each answer, and shows you exactly where that answer came from — so nothing is a blind guess.
+**Our solution:** A system that only answers using the documents you give it, tells you *how confident* it is in each answer, shows you exactly where that answer came from, and honestly says "I don't know" when it isn't sure — instead of guessing.
 
 ---
 
@@ -24,8 +24,12 @@ A user can:
 - See a confidence score (High / Medium / Low) for every answer
 - See exactly which PDF and page number the answer came from
 - See a sentence-by-sentence breakdown of how well-supported each part of the answer is
-- Have every question, answer, and confidence score saved for later review
-- Access everything through a secured API (API key required)
+- Get an honest "I don't have enough information" message instead of a shaky guess, when confidence is too low
+- Give feedback (👍 / 👎) on any answer
+- Choose between **Strict mode** (answers only from documents) or **Direct mode** (plain LLM, no restriction) — useful for comparing the two
+- Choose which AI model generates the answer
+- Have every question, answer, confidence score, and response time saved for later review
+- Access everything only with a valid API key (the system is secured, not open to anyone)
 
 ---
 
@@ -33,13 +37,18 @@ A user can:
 
 ```
 PDF Upload → Extract text (page by page) → Chunk → Embed → Store in FAISS + BM25 index
+
 Question → Embed → FAISS (semantic, top 20) + BM25 (keyword, top 20) → merge
          → Cross-Encoder reranks combined candidates → Best 5 chunks selected
+
 Best 5 chunks + Question → Sent to LLM → Generates answer
-Answer → Split into sentences → Each checked against source → Confidence + Evidence produced → Saved to database
+
+Answer → Split into sentences → Each checked against source → Confidence + Evidence produced
+       → If confidence is too low → replaced with an honest "I don't know" message
+       → Saved to database, ready for user feedback
 ```
 
-That's the full idea. Everything below explains how each part was actually built.
+That's the full idea. Everything below explains how each part was actually built, in plain language.
 
 ---
 
@@ -50,7 +59,7 @@ That's the full idea. Everything below explains how each part was actually built
 | Embeddings (text → vectors) | `all-MiniLM-L6-v2` (SentenceTransformers) |
 | Reranking retrieved chunks | `cross-encoder/ms-marco-MiniLM-L-6-v2` (SentenceTransformers) |
 | Keyword search | BM25 (`rank_bm25`) |
-| Answer generation | `openai/gpt-oss-120b` (via Groq API) |
+| Answer generation | `openai/gpt-oss-120b` (default, via Groq API) — user can switch to other Groq-hosted models |
 
 No model was trained by us — all are pre-trained, free, and publicly available. We built the *system* (retrieval, reranking, verification, confidence scoring, security) around them — that's the core idea of RAG.
 
@@ -78,7 +87,7 @@ No model was trained by us — all are pre-trained, free, and publicly available
 
 ---
 
-## How Each Part Works
+## How Each Part Works (In Simple Terms)
 
 ### 1. Document Ingestion
 - PDF text is extracted **page by page** using `pypdf`, so we always know which page any piece of text came from.
@@ -87,8 +96,8 @@ No model was trained by us — all are pre-trained, free, and publicly available
 - Each chunk is converted into a vector using `all-MiniLM-L6-v2` and stored in **FAISS**. A parallel **BM25 keyword index** is also built from the same chunks.
 
 ### 2. Hybrid Retrieval (FAISS + BM25)
-- The question is embedded and FAISS returns the top 20 semantically closest chunks.
-- The same question is also run through BM25, which returns the top 20 chunks by exact keyword match.
+- The question is embedded and FAISS returns the top 20 semantically closest chunks (understands *meaning*).
+- The same question is also run through BM25, which returns the top 20 chunks by exact keyword match (catches *exact terms*).
 - Both result sets are merged and deduplicated — combining "meaning-based" and "exact-term" matching catches cases either method alone would miss (e.g. specific numbers, drug names, medical codes).
 
 ### 3. Cross-Encoder Reranking
@@ -107,13 +116,29 @@ No model was trained by us — all are pre-trained, free, and publicly available
 ### 6. Confidence Engine
 - Combines overall retrieval quality with the sentence verification results into one final confidence score.
 - **Strict rule:** if even ONE sentence in the answer is "Unsupported," the whole answer is marked **Low confidence** — even if other sentences scored well. This is intentional — the goal is catching hallucination, not inflating the score.
-- Final labels: 🟢 High, 🟡 Medium, 🔴 Low.
+- Final labels: High, Medium, Low.
 
-### 7. Evidence Extraction
-- For every answer, the single best-supporting sentence is identified and traced back to its exact **source PDF** and **page number**.
+### 7. "I Don't Know" Fallback
+- If the final confidence score is very low (below 35%), the system doesn't present a shaky guess as an answer.
+- Instead, it replaces the answer with an honest message: *"I don't have enough reliable information in the uploaded documents to answer this confidently."*
+- Evidence and sentence verification are also cleared in this case, so nothing misleading is shown.
 
-### 8. Storage
-- Every question, answer, confidence, and score is saved to a PostgreSQL table (`chat_history`) with a timestamp — nothing is lost when the server restarts.
+### 8. Evidence Extraction
+- For every real answer, the single best-supporting sentence is identified and traced back to its exact **source PDF** and **page number**.
+
+### 9. Feedback System
+- Every answer is saved with a unique ID.
+- Users can submit 👍 (up) or 👎 (down) feedback tied to that specific answer, stored in its own `feedback` table — useful for spotting which kinds of questions the system struggles with over time.
+
+### 10. Strict vs Direct Mode
+- **Strict mode (default):** the full RAG pipeline — retrieval, reranking, verification, confidence — answers only from uploaded documents.
+- **Direct mode:** skips retrieval entirely and sends the question straight to the LLM with no restriction — useful for demonstrating the difference RAG makes (grounded vs. potentially hallucinated answers).
+
+### 11. Multi-Model Support
+- The LLM used for generation isn't fixed — any Groq-hosted model can be specified per request, making it easy to compare model quality/speed without changing code.
+
+### 12. Storage
+- Every question, answer, confidence, score, and **response time** is saved to a PostgreSQL table (`chat_history`) with a timestamp — nothing is lost when the server restarts.
 
 ---
 
@@ -121,12 +146,14 @@ No model was trained by us — all are pre-trained, free, and publicly available
 
 | Feature | What it does |
 |---------|---------------|
-| API Key Authentication | Every request to `/ask` and `/upload` requires a valid `X-API-Key` header — blocks unauthorized use |
+| API Key Authentication | Every request to `/ask`, `/upload`, and `/feedback` requires a valid `X-API-Key` header — blocks unauthorized use |
 | File Upload Validation | Only accepts real PDF files, and rejects files over 10MB |
 | CORS Protection | Restricts which frontend domains are allowed to call the API |
 | Rate Limiting | Limits each user to 10 requests/minute on `/ask`, preventing abuse |
-| Dependency Vulnerability Scanning | `pip-audit` checks all installed packages for known security issues — all currently clean |
-| Secrets Management | API keys and DB passwords are kept in a `.env` file, never hardcoded in code |
+| Dependency Vulnerability Scanning | `pip-audit` checks all installed packages for known security issues — currently clean, no known vulnerabilities |
+| Secrets Management | API keys and DB passwords are kept in a `.env` file, never hardcoded in code, and never committed to GitHub |
+
+We also manually verified our GitHub commit history contains no leaked secrets — `.env` was never tracked, and only safe placeholder values exist in the shared `.env.example`.
 
 ---
 
@@ -134,11 +161,11 @@ No model was trained by us — all are pre-trained, free, and publicly available
 
 We built two separate evaluation tools, since they measure different things:
 
-**1. Test-Set Evaluation (`evaluate.py`)**
-A fixed list of questions (covering every uploaded PDF) is sent automatically to our own API. Results (confidence, score, response time, cited source) are logged and turned into summary stats and graphs. This shows *designed* reliability — how well the system performs on questions we specifically chose to test it with.
+**1. Test-Set Evaluation (`evaluate.py` + `analyze_results.py`)**
+A fixed list of questions (covering every uploaded PDF — diabetes, hypertension, PHC, asthma — plus an unrelated "trick" question to test honesty) is sent automatically to our own API. Results (confidence, score, response time, cited source) are logged and turned into summary stats and graphs. This shows *designed* reliability — how well the system performs on questions we specifically chose to test it with.
 
 **2. Real-Usage Evaluation (`evaluate_from_history.py`)**
-Pulls every question that has actually been asked (stored in PostgreSQL) and generates the same kind of stats and graph from real usage — not just curated test questions. This shows *actual* reliability, based on genuine interactions with the system.
+Pulls every question that has actually been asked (stored in PostgreSQL) and generates the same kind of stats and graph from real usage — not just curated test questions. This shows *actual* reliability, based on genuine interactions with the system, including response time.
 
 Both produce a confidence distribution graph and a JSON file with the raw results — useful evidence for a project report.
 
@@ -156,19 +183,35 @@ Both produce a confidence distribution graph and a JSON file with the raw result
 | Answer generation (LLM via Groq) | Done |
 | Sentence-level verification | Done |
 | Confidence Engine (combined scoring) | Done |
+| "I don't know" fallback for low-confidence answers | Done |
 | Evidence extraction (source PDF + page) | Done |
+| Feedback system (up/down, linked to each answer) | Done |
+| Strict RAG vs Direct LLM toggle | Done |
+| Multi-model selection | Done |
+| Response time tracking | Done |
 | FastAPI backend | Done |
 | PDF upload support (multiple documents) | Done |
-| PostgreSQL (chat history) | Done |
+| PostgreSQL (chat history + feedback) | Done |
 | Security (API key, CORS, rate limiting, file validation) | Done |
 | Dependency vulnerability scan | Done — no known issues |
 | Evaluation module (test-set based) | Done |
 | Evaluation module (real-usage based) | Done |
 | React frontend | Not started |
 | OCR for images/diagrams in PDFs | Not started (evaluated, decided to skip for now) |
-| Feedback system (thumbs up/down) | Not started |
-| Strict RAG vs Direct LLM toggle | Not started |
-| Multi-model selection | Not started |
+
+---
+
+## Files In This Project
+
+| File | What it's for |
+|------|----------------|
+| `api.py` | The actual running application — all features live here |
+| `ingest.py` | One-time script to build the initial vector store from a PDF |
+| `evaluate.py` | Runs a fixed test-question set against the API and saves results |
+| `analyze_results.py` | Turns `evaluate.py`'s results into summary stats and graphs |
+| `evaluate_from_history.py` | Pulls real usage data from PostgreSQL and generates stats/graphs |
+| `test_questions.py` | The list of test questions used by `evaluate.py` |
+| `main.py`, `retriever.py`, `generator.py` | Early standalone versions used while building the pipeline stage by stage — no longer used, kept only as reference (each has a comment at the top explaining this) |
 
 ---
 
@@ -204,6 +247,132 @@ pip-audit                             → scans for vulnerable dependencies
 
 ---
 
+## Installation History (In the Order We Actually Ran Them)
+
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+Creates and activates an isolated environment for this project's tools.
+
+```bash
+pip install langchain sentence-transformers faiss-cpu --timeout 100
+```
+Core RAG tools — LangChain for chunking, SentenceTransformers for embeddings, FAISS for the vector database.
+
+```bash
+pip install langchain-text-splitters
+```
+Newer LangChain versions moved the text splitter into its own package — needed for `RecursiveCharacterTextSplitter`.
+
+```bash
+pip install groq
+```
+Groq's SDK — lets our code call the LLM over their API.
+
+```bash
+pip install python-dotenv
+```
+Loads secret values (API keys, DB password) from a `.env` file instead of hardcoding them in the code.
+
+```bash
+pip install scikit-learn
+```
+Provides `cosine_similarity`, used in our validation layer to check if an answer matches the source.
+
+```bash
+pip install fastapi uvicorn
+```
+FastAPI builds the web API; uvicorn is the server that actually runs it.
+
+```bash
+pip install pypdf
+```
+Reads and extracts text from uploaded PDF files.
+
+```bash
+pip install huggingface_hub
+```
+Used to pre-download the embedding model directly, to avoid interrupted downloads during normal runs.
+
+```bash
+pip install psycopg2-binary
+```
+Lets Python connect to and run queries against our PostgreSQL database.
+
+```bash
+pip install python-multipart
+```
+Required by FastAPI to handle file uploads (needed for the `/upload` endpoint).
+
+```bash
+pip install requests
+```
+Used by our evaluation script to automatically call our own API with test questions.
+
+```bash
+pip install matplotlib
+```
+Used to generate the confidence distribution and score graphs for our evaluation report.
+
+```bash
+pip install rank_bm25
+```
+Adds keyword-based search (BM25), used alongside FAISS for hybrid retrieval.
+
+```bash
+pip install slowapi
+```
+Adds rate limiting to protect the API from being spammed.
+
+```bash
+pip install pip-audit
+```
+Not a project dependency — a one-time security tool used to scan all installed packages for known vulnerabilities.
+
+Note: `sentence-transformers` (already installed) also provides the `CrossEncoder` class used for reranking — no separate install was needed for that.
+
+---
+
+## Commands Used Day-to-Day (Running the Project)
+
+```bash
+venv\Scripts\activate
+```
+Activates the virtual environment — run this first, every time, before anything else.
+
+```bash
+python ingest.py
+```
+Builds the vector store from a PDF. Only needs to be run once, at the very start (or if the vector store is deleted and needs rebuilding).
+
+```bash
+uvicorn api:app --reload
+```
+Starts the actual application (the API server). Must be left running in its own terminal — `--reload` restarts it automatically whenever the code changes.
+
+```bash
+python evaluate.py
+```
+Sends a fixed set of test questions to the running API and saves the results. Requires `uvicorn` to be running in a separate terminal first.
+
+```bash
+python analyze_results.py
+```
+Turns `evaluate.py`'s output into summary statistics and graphs.
+
+```bash
+python evaluate_from_history.py
+```
+Pulls every real question ever asked (from PostgreSQL) and generates stats/graphs from actual usage.
+
+```bash
+pip-audit
+```
+Re-run any time to check whether newly installed or updated packages have known vulnerabilities.
+
+---
+
 ## Quick Setup Guide
 
 1. Create and activate a virtual environment:
@@ -222,7 +391,7 @@ pip-audit                             → scans for vulnerable dependencies
    APP_API_KEY=your_custom_api_key_here
    TRANSFORMERS_VERBOSITY=error
    ```
-4. Install PostgreSQL, then create the database and table:
+4. Install PostgreSQL, then create the database and tables:
    ```sql
    CREATE DATABASE clinical_rag;
 
@@ -232,6 +401,14 @@ pip-audit                             → scans for vulnerable dependencies
        answer TEXT,
        confidence TEXT,
        score FLOAT,
+       response_time FLOAT,
+       created_at TIMESTAMP DEFAULT NOW()
+   );
+
+   CREATE TABLE feedback (
+       id SERIAL PRIMARY KEY,
+       chat_id INT REFERENCES chat_history(id),
+       feedback TEXT CHECK (feedback IN ('up', 'down')),
        created_at TIMESTAMP DEFAULT NOW()
    );
    ```
@@ -239,13 +416,15 @@ pip-audit                             → scans for vulnerable dependencies
    ```bash
    python ingest.py
    ```
+   Note: since `chunks.pkl` and `vector_store.index` are no longer tracked in GitHub, teammates cloning the repo must run this step themselves before starting the API.
 6. Run the API:
    ```bash
    uvicorn api:app --reload
    ```
 7. Open `http://127.0.0.1:8000/docs`, click **Authorize**, enter your `APP_API_KEY`, then:
    - Use `POST /upload` to add PDF documents
-   - Use `POST /ask` to ask questions
+   - Use `POST /ask` to ask questions (optionally pass `"mode": "direct"` or a different `"model"`)
+   - Use `POST /feedback` to submit up/down feedback on a given `chat_id`
 8. To evaluate performance:
    ```bash
    python evaluate.py                  # test-set based
