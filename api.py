@@ -185,8 +185,19 @@ def ask(request: Request, query: Query):
     else:
         confidence = "Low"
 
-    elapsed_time = round(time.time() - start_time, 2)
+    # "I don't know" fallback — if confidence is very low, don't present a shaky answer as fact
+    if final_confidence_score < 0.35:
+        answer = "I don't have enough reliable information in the uploaded documents to answer this confidently. Please try rephrasing your question or upload a document that covers this topic."
+        confidence = "Low"
+        evidence = {
+            "source_pdf": None,
+            "page_number": None,
+            "supporting_text": None
+            }
+        sentence_verification = []
+        
 
+    elapsed_time = round(time.time() - start_time, 2)
     cursor.execute(
         "INSERT INTO chat_history (question, answer, confidence, score, response_time) VALUES (%s, %s, %s, %s, %s)",
         (query.question, answer, confidence, round(final_confidence_score * 100, 2), elapsed_time)
