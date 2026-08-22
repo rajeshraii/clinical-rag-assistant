@@ -73,6 +73,7 @@ client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 class Query(BaseModel):
     question: str
     mode: str = "strict"   # "strict" (default, RAG) or "direct" (plain LLM, no retrieval)
+    model: str = "openai/gpt-oss-120b"  # default model, user can override
 
 @app.post("/ask", dependencies=[Depends(verify_api_key)])
 @limiter.limit("10/minute")
@@ -82,7 +83,7 @@ def ask(request: Request, query: Query):
     if query.mode == "direct":
         # Skip retrieval entirely — plain LLM call, no context restriction
         response = client.chat.completions.create(
-            model="openai/gpt-oss-120b",
+            model=query.model,
             messages=[{"role": "user", "content": query.question}]
         )
         answer = response.choices[0].message.content
@@ -131,7 +132,7 @@ def ask(request: Request, query: Query):
     context = "\n".join([r["text"] for r in retrieved])
     prompt = prompt = prompt = f"Answer the question using the same key terms and phrasing as the context wherever possible. Follow any length or format instructions in the question exactly.\nContext: {context}\nQuestion: {query.question}\nAnswer:"
     response = client.chat.completions.create(
-        model="openai/gpt-oss-120b",
+        model=query.model,
         messages=[{"role": "user", "content": prompt}]
     )
     answer = response.choices[0].message.content
