@@ -1,3 +1,14 @@
+"""
+NOTE: This file is no longer used in the running application.
+
+Why it was created: Standalone script to test Stage 3 (answer generation) in
+isolation — sending a hardcoded context and question to the LLM and printing
+the answer, before generation was combined with retrieval.
+
+Why it's no longer used: Answer generation now happens inside api.py's /ask
+endpoint, using dynamically retrieved and reranked context instead of a
+hardcoded one. Kept only as a reference of the early, simpler generation logic.
+"""
 
 import os
 from dotenv import load_dotenv
