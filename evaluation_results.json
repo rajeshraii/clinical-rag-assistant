@@ -1,72 +1,128 @@
 [
   {
     "question": "What are the symptoms of diabetes?",
-    "confidence": "High",
-    "score": 82.08,
-    "response_time": 1.75,
-    "source_pdf": "Diabetes_file.pdf"
+    "confidence": "Low",
+    "score": 77.19,
+    "response_time": 56.78,
+    "source_pdf": "Diabetes_test_pdf.pdf"
   },
   {
     "question": "What is the difference between Type 1 and Type 2 diabetes?",
     "confidence": "High",
-    "score": 85.35,
-    "response_time": 1.74,
+    "score": 86.16,
+    "response_time": 3.89,
     "source_pdf": "Diabetes_file.pdf"
   },
   {
     "question": "What are the risk factors for Type 2 diabetes?",
     "confidence": "High",
-    "score": 83.26,
-    "response_time": 1.5,
-    "source_pdf": "Diabetes_file.pdf"
+    "score": 85.0,
+    "response_time": 4.93,
+    "source_pdf": "Diabetes_test_pdf.pdf"
+  },
+  {
+    "question": "What role does foot care play in diabetes management?",
+    "confidence": "High",
+    "score": 86.97,
+    "response_time": 2.84,
+    "source_pdf": "Diabetes_test_pdf.pdf"
+  },
+  {
+    "question": "What are the major goals of diabetes management?",
+    "confidence": "High",
+    "score": 90.24,
+    "response_time": 3.93,
+    "source_pdf": "Diabetes_test_pdf.pdf"
   },
   {
     "question": "What happens to blood vessels in hypertension?",
-    "confidence": "Low",
-    "score": 21.21,
-    "response_time": 1.49,
-    "source_pdf": "PHC.pdf"
+    "confidence": "High",
+    "score": 85.06,
+    "response_time": 2.3,
+    "source_pdf": "Hypertension Fact Sheet.pdf"
   },
   {
     "question": "How is hypertension treated?",
     "confidence": "Low",
-    "score": 44.25,
-    "response_time": 1.73,
-    "source_pdf": "Diabetes_file.pdf"
+    "score": 65.69,
+    "response_time": 3.43,
+    "source_pdf": "Hypertension Fact Sheet.pdf"
   },
   {
     "question": "What is considered a high blood pressure reading?",
+    "confidence": "High",
+    "score": 83.43,
+    "response_time": 2.11,
+    "source_pdf": "Hypertension Fact Sheet.pdf"
+  },
+  {
+    "question": "Who is most affected by hypertension?",
+    "confidence": "High",
+    "score": 84.4,
+    "response_time": 1.87,
+    "source_pdf": "Hypertension Fact Sheet.pdf"
+  },
+  {
+    "question": "What lifestyle changes help manage hypertension?",
     "confidence": "Low",
-    "score": 30.04,
-    "response_time": 1.5,
-    "source_pdf": "Diabetes_file.pdf"
+    "score": 75.42,
+    "response_time": 5.42,
+    "source_pdf": "Diabetes_test_pdf.pdf"
   },
   {
     "question": "What is Primary Health Care?",
     "confidence": "High",
-    "score": 94.83,
-    "response_time": 0.98,
+    "score": 95.28,
+    "response_time": 3.47,
     "source_pdf": "PHC.pdf"
   },
   {
     "question": "What are the key principles of PHC?",
     "confidence": "High",
-    "score": 85.62,
-    "response_time": 1.06,
+    "score": 86.32,
+    "response_time": 2.98,
     "source_pdf": "PHC.pdf"
   },
   {
     "question": "How does PHC improve health system performance?",
     "confidence": "High",
-    "score": 86.71,
-    "response_time": 1.27,
+    "score": 90.96,
+    "response_time": 3.15,
     "source_pdf": "PHC.pdf"
+  },
+  {
+    "question": "What are the operational levers of PHC?",
+    "confidence": "High",
+    "score": 87.19,
+    "response_time": 2.63,
+    "source_pdf": "PHC.pdf"
+  },
+  {
+    "question": "What are the symptoms of asthma?",
+    "confidence": "Low",
+    "score": 58.15,
+    "response_time": 3.56,
+    "source_pdf": "asthma_fact_sheet.pdf"
+  },
+  {
+    "question": "What triggers asthma attacks?",
+    "confidence": "High",
+    "score": 89.82,
+    "response_time": 2.72,
+    "source_pdf": "asthma_fact_sheet.pdf"
+  },
+  {
+    "question": "How is asthma managed or treated?",
+    "confidence": "High",
+    "score": 84.89,
+    "response_time": 3.89,
+    "source_pdf": "asthma_fact_sheet.pdf"
   },
   {
     "question": "What is the capital of France?",
     "confidence": "Low",
-    "score": 48.59,
-    "response_time": 2.13,
-    "source_pdf": "PHC.pdf"
+    "score": 5.07,
+    "response_time": 3.24,
+    "source_pdf": null
   }
 ]
