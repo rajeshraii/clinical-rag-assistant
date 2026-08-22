@@ -1,3 +1,15 @@
+"""
+NOTE: This file is no longer used in the running application.
+
+Why it was created: Standalone script to test Stage 2 (retrieval) in isolation —
+taking a hardcoded question, searching FAISS, and printing the matching chunks —
+before retrieval was combined with the rest of the pipeline.
+
+Why it's no longer used: Retrieval now happens inside api.py's /ask endpoint,
+combined with BM25 hybrid search and cross-encoder reranking, which this file
+does not include. Kept only as a reference of the early, simpler retrieval logic.
+"""
+
 from sentence_transformers import SentenceTransformer
 import faiss
 import numpy as np
