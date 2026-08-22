@@ -72,11 +72,37 @@ client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 class Query(BaseModel):
     question: str
+    mode: str = "strict"   # "strict" (default, RAG) or "direct" (plain LLM, no retrieval)
 
 @app.post("/ask", dependencies=[Depends(verify_api_key)])
 @limiter.limit("10/minute")
 def ask(request: Request, query: Query):
     start_time = time.time()
+
+    if query.mode == "direct":
+        # Skip retrieval entirely — plain LLM call, no context restriction
+        response = client.chat.completions.create(
+            model="openai/gpt-oss-120b",
+            messages=[{"role": "user", "content": query.question}]
+        )
+        answer = response.choices[0].message.content
+        elapsed_time = round(time.time() - start_time, 2)
+
+        cursor.execute(
+            "INSERT INTO chat_history (question, answer, confidence, score, response_time) VALUES (%s, %s, %s, %s, %s) RETURNING id",
+            (query.question, answer, "N/A (Direct Mode)", None, elapsed_time)
+        )
+        chat_id = cursor.fetchone()[0]
+        conn.commit()
+
+        return {
+            "chat_id": chat_id,
+            "mode": "direct",
+            "answer": answer,
+            "confidence": "N/A (Direct Mode - no verification performed)",
+        }
+
+    # else continue with your EXISTING strict RAG pipeline below (unchanged)
     query_vector = embedder.encode([query.question])
     
     # Semantic search (FAISS)
