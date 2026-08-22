@@ -199,18 +199,40 @@ def ask(request: Request, query: Query):
 
     elapsed_time = round(time.time() - start_time, 2)
     cursor.execute(
-        "INSERT INTO chat_history (question, answer, confidence, score, response_time) VALUES (%s, %s, %s, %s, %s)",
+        "INSERT INTO chat_history (question, answer, confidence, score, response_time) VALUES (%s, %s, %s, %s, %s) RETURNING id",
         (query.question, answer, confidence, round(final_confidence_score * 100, 2), elapsed_time)
-        )
+    )
+    chat_id = cursor.fetchone()[0]
     conn.commit()
 
     return {
+    "chat_id":chat_id,
     "answer": answer,
     "confidence": confidence,
     "score": round(final_confidence_score * 100, 2),
     "evidence": evidence,
     "sentence_verification": sentence_verification
 }
+
+#Feedback endpoint
+
+class FeedbackRequest(BaseModel):
+    chat_id: int
+    feedback: str  # "up" or "down"
+
+@app.post("/feedback", dependencies=[Depends(verify_api_key)])
+def submit_feedback(fb: FeedbackRequest):
+    if fb.feedback not in ("up", "down"):
+        raise HTTPException(status_code=400, detail="Feedback must be 'up' or 'down'")
+
+    cursor.execute(
+        "INSERT INTO feedback (chat_id, feedback) VALUES (%s, %s)",
+        (fb.chat_id, fb.feedback)
+    )
+    conn.commit()
+    return {"message": "Feedback recorded successfully"}
+
+#upload endpoint
 
 @app.post("/upload", dependencies=[Depends(verify_api_key)])
 async def upload_pdf(file: UploadFile = File(...)):
