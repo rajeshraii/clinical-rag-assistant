@@ -2,4 +2,5 @@ venv/
 __pycache__/
 *.pyc
 .env
-uploads/
+uploads/chunks.pkl 
+vector_store.index 
